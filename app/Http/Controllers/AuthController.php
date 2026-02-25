@@ -10,11 +10,6 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
-    {
-
-    }
-
     public function login(Request $request)
         {
             
@@ -31,13 +26,15 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken('api_token')->plainTextToken;
+        $user = Auth::user();
+        $token = $user->create('apitoken')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful',
             'token' => $token
         ]);
     }
+
 
     public function logout(Request $request)
     {
@@ -46,5 +43,6 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully'
         ]);
-    } 
+    }
+
 }
