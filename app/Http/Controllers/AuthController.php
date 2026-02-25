@@ -9,6 +9,28 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
+
+        return response()->json([
+            'message' => 'User registered successfully',
+            'user' => $user
+        ], 201);
+    }
+
+
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
@@ -18,13 +40,14 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        $token = $user->create('apitoken')->plainTextToken;
+        $token = $user->createToken('apitoken')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful',
             'token' => $token
         ]);
     }
+
 
     public function logout(Request $request)
     {
@@ -33,5 +56,6 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully'
         ]);
-    } 
+    }
+
 }
